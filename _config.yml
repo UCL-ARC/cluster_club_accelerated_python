@@ -3,6 +3,7 @@
 
 title: Cluster club workshop on Accelerating Scientific Code in Python
 author: UCL-ARC
+copyright : "2024"  # Copyright year to be placed in the footer
 logo: ARC_logo.jpg
 
 # Force re-execution of notebooks on each build.
