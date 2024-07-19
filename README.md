@@ -18,7 +18,7 @@ pip install -r requirements.txt
 
 For working on the exercises, please invoke the command `jupyter lab` session for notebooks in the appropriate directory.
 
-For viewing the materials as rendered HTML pages in a web browser, clone this repository and run `jupyter book .`. The HTML files are located there.
+For viewing the materials as rendered HTML pages in a web browser, clone this repository and run `jupyter book .`. The HTML files shall be created in the `_build/html/` directory.
 
 ## Contributors
 
