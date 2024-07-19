@@ -1,5 +1,6 @@
-jupyter-book
-matplotlib
-numpy
-numba
 ghp-import
+jupyter-book
+jupterlab
+matplotlib
+numba
+numpy
