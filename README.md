@@ -1,35 +1,30 @@
-# Techniques of High-Performance Computing - Lecture Notes
+# Cluster club workshop on Accelerating Scientific Code in Python
 
-Lecture Notes for the module Techniques of High-Performance Computing
+This repository contains the material (notes, exercises and a challenge) for the cluster-club workshop on _Accelerating Scientific Code in Python_ run by UCL-ARC.
+
+## Setting up an isolated python environment
+
+We recommend to set up a separate python environment that is isolated from your system's installation of python or any other version in your other projects. This is so that we can obtain a deterministic development environment with only the relevant python libraries and packages that are essential for this project.
+
+You may use any tool to obtain a suitable python virtual environment, although the instructions here shall use `conda`.
+
+```
+conda create -n condaenv_arc_clusterclub python=3.12
+conda activate condaenv_arc_clusterclub
+pip install -r requirements.txt
+```
 
 ## Usage
 
-### Building the book
+For working on the exercises, please invoke the command `jupyter lab` session for notebooks in the appropriate directory.
 
-If you'd like to develop on and build the Techniques of High-Performance Computing - Lecture Notes book, you should:
-
-- Clone this repository and run
-- Run `pip install -r requirements.txt` (it is recommended you do this within a virtual environment)
-- (Recommended) Remove the existing `Techniques of High-Performance Computing - Lecture Notes/_build/` directory
-- Run `jupyter-book build Techniques of High-Performance Computing - Lecture Notes/`
-
-A fully-rendered HTML version of the book will be built in `Techniques of High-Performance Computing - Lecture Notes/_build/html/`.
-
-### Hosting the book
-
-The html version of the book is hosted on the `gh-pages` branch of this repo. A GitHub actions workflow has been created that automatically builds and pushes the book to this branch on a push or pull request to master.
-
-If you wish to disable this automation, you may remove the GitHub actions workflow and build the book manually by:
-
-- Navigating to your local build; and running,
-- `ghp-import -n -p -f Techniques of High-Performance Computing - Lecture Notes/_build/html`
-
-This will automatically push your build to the `gh-pages` branch. More information on this hosting process can be found [here](https://jupyterbook.org/publish/gh-pages.html#manually-host-your-book-with-github-pages).
+For viewing the materials as rendered HTML pages in a web browser, clone this repository and run `jupyter book .`. The HTML files are located there.
 
 ## Contributors
 
-We welcome and recognize all contributions. You can see a list of current contributors in the [contributors tab](https://github.com/tbetcke/hpc_lecture_notes/graphs/contributors).
+We welcome and recognize all contributions. A contribution guide can be found [here](./CONTRIBUTING.md).
 
 ## Credits
 
-This project is created using the excellent open source [Jupyter Book project](https://jupyterbook.org/) and the [executablebooks/cookiecutter-jupyter-book template](https://github.com/executablebooks/cookiecutter-jupyter-book).
+- This project is created using the excellent open source [Jupyter Book project](https://jupyterbook.org/) and the [executablebooks/cookiecutter-jupyter-book template](https://github.com/executablebooks/cookiecutter-jupyter-book).
+- Based on Prof Timo Betcke's [HPC Lecture Notes in Python](https://tbetcke.github.io/hpc_lecture_notes/intro.html)
