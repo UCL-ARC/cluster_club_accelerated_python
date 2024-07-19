@@ -1,0 +1,36 @@
+Timer unit: 1e-09 s
+
+Total time: 98.9386 s
+File: /home/krishnakumar/Documents/work_ucl_arc/arc_cluster_club/cluster_club_accelerated_python/cfd_python_lists/jacobi.py
+Function: jacobi at line 10
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    10                                           @line_profiler.profile
+    11                                           def jacobi(niter, psi):
+    12                                           
+    13                                               # Get the inner dimensions
+    14         1        806.0    806.0      0.0      m = len(psi) - 2
+    15         1        285.0    285.0      0.0      n = len(psi[0]) -2
+    16                                           
+    17                                               # Define the temporary list and zero it
+    18     17031    2596937.0    152.5      0.0      tmp = [[0 for col in range(n+2)] for row in range(m+2)]
+    19                                           
+    20                                               # Iterate for number of iterations
+    21     10000    3159637.0    316.0      0.0      for iter in range(1,niter+1):
+    22                                           
+    23                                                   # Loop over the elements computing the stream function
+    24   1290000  170220052.0    132.0      0.2          for i in range(1,m+1):
+    25 165120000        2e+10    145.1     24.2              for j in range(1,n+1):
+    26 163840000        3e+10    190.2     31.5                  tmp[i][j] = 0.25 * (psi[i+1][j]+psi[i-1][j]+psi[i][j+1]+psi[i][j-1])
+    27                                           
+    28                                                   # Update psi
+    29   1290000  178970823.0    138.7      0.2          for i in range(1,m+1):
+    30 165120000        2e+10    139.6     23.3              for j in range(1,n+1):
+    31 163840000        2e+10    124.6     20.6                  psi[i][j] = tmp[i][j]
+    32                                           
+    33                                                   # Debug output
+    34     10000    6647429.0    664.7      0.0          if iter%1000 == 0:
+    35        10     321921.0  32192.1      0.0              sys.stdout.write("completed iteration {0}\n".format(iter))
+
+ 98.94 seconds - /home/krishnakumar/Documents/work_ucl_arc/arc_cluster_club/cluster_club_accelerated_python/cfd_python_lists/jacobi.py:10 - jacobi
