@@ -2,7 +2,7 @@
 # Learn more at https://jupyterbook.org/customize/config.html
 
 title: Cluster club workshop on Accelerating Scientific Code in Python
-author: UCL-ARC
+author: Krishnakumar Gopalakrishnan, Tuomas Koskela, Samantha Ahern (UCL-ARC) and Jamie Quinn
 copyright : "2024"  # Copyright year to be placed in the footer
 logo: ARC_logo.jpg
 
