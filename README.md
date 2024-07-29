@@ -19,7 +19,13 @@ pip install -r requirements.txt
 
 For working on the exercises, please clone (or download) this repository and invoke the command `jupyter lab` to access the computational notebooks from the relevant directory. The challenge problem towards the last hour of the workshop is intended to be worked on as a python script using your preferred text editor/IDE.
 
-A web version of the materials can be found online at [https://github-pages.arc.ucl.ac.uk/cluster_club_accelerated_python/](https://github-pages.arc.ucl.ac.uk/cluster_club_accelerated_python/). To view a local copy of the materials as rendered HTML pages, please clone (or download) this repository, set up the development environment as outlined [above](setup-devenv), and run `jupyter book build .`. The static web pages shall be created in the `_build/html/` directory, and the main landing page can be accessed by opening `_build/html/index.html` in a web browser.
+A web version of the materials can be found online at [https://github-pages.arc.ucl.ac.uk/cluster_club_accelerated_python/](https://github-pages.arc.ucl.ac.uk/cluster_club_accelerated_python/). To view a local copy of the materials as rendered HTML pages, please follow the steps below:
+* clone (or download) this repository
+* navigate to the root of the repository
+* set up the development environment as outlined [above](setup-devenv)
+* run `jupyter book build .`.
+
+The static web pages shall be created in the `_build/html/` directory, and the main landing page can be accessed by opening `_build/html/index.html` in a web browser.
 
 ## Contributors
 

@@ -13,9 +13,6 @@
 import sys
 import time
 
-# Import the local "util.py" methods
-import util
-
 # Import the external jacobi function from "jacobi.py"
 from jacobi import jacobi
 
@@ -26,11 +23,11 @@ def main(argv):
     if len(argv) < 2:
         sys.stderr.write("Usage: cfd.py <scalefactor> <iterations> \n")
         sys.exit(1)
-    
+
     # Get the system parameters from the arguments
     scalefactor = int(argv[0])
     niter = int(argv[1])
-    
+
     sys.stdout.write("\n2D CFD Simulation\n")
     sys.stdout.write("=================\n")
     sys.stdout.write("Scale factor = {0}\n".format(scalefactor))
@@ -49,15 +46,15 @@ def main(argv):
     # Set the dimensions of the array
     m = mbase*scalefactor
     n = nbase*scalefactor
-    
+
     # Set the parameters for boundary conditions
-    b = bbase*scalefactor 
+    b = bbase*scalefactor
     h = hbase*scalefactor
     w = wbase*scalefactor
 
     # Define the psi array of dimension [m+2][n+2] and set it to zero
     psi = [[0 for col in range(n+2)] for row in range(m+2)]
-    
+
     # Set the boundary conditions on bottom edge
     for i in range(b+1, b+w):
         psi[i][0] = float(i-b)
@@ -82,9 +79,6 @@ def main(argv):
     tend = time.time()
     sys.stdout.write("\n...finished\n")
     sys.stdout.write("\nCalculation took {0:.5f}s\n\n".format(tend-tstart))
-    
-    # Write the output files 
-    util.write_data(m, n, scalefactor, psi, "velocity.dat", "colourmap.dat")
 
     # Finish nicely
     sys.exit(0)
@@ -92,4 +86,4 @@ def main(argv):
 
 # Function to create tidy way to have main method
 if __name__ == "__main__":
-        main(sys.argv[1:])
+    main(sys.argv[1:])

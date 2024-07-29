@@ -5,9 +5,7 @@
 #
 
 import sys
-import line_profiler
 
-@line_profiler.profile
 def jacobi(niter, psi):
 
     # Get the inner dimensions
