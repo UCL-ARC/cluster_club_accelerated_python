@@ -1,4 +1,4 @@
-jupterlab
+jupyterlab
 jupyter-book
 line_profiler
 matplotlib
