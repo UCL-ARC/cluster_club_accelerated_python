@@ -16,9 +16,9 @@ pip install -r requirements.txt
 
 ## Usage
 
-For working on the exercises, please invoke the command `jupyter lab` session for notebooks in the appropriate directory.
+For working on the exercises, please clone (or download) this repository and invoke the command `jupyter lab` session to access the computational notebooks from the relevant directory. The challenge problem at the end is to be worked on as a python script using your preferred text editor/IDE.
 
-For viewing the materials as rendered HTML pages in a web browser, clone this repository and run `jupyter book build .`. The HTML files shall be created in the `_build/html/` directory.
+A web version of the materials can be found online at [https://github-pages.arc.ucl.ac.uk/cluster_club_accelerated_python/](https://github-pages.arc.ucl.ac.uk/cluster_club_accelerated_python/). To view a local copy of the materials as rendered HTML pages, please clone (or download) this repository and run `jupyter book build .`. The static web pages shall be created in the `_build/html/` directory, and the main landing page can be accessed by opening `_build/html/index.html` in a web browser.
 
 ## Contributors
 
