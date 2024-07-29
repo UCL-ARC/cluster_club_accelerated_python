@@ -4,3 +4,4 @@ line_profiler
 matplotlib
 numba
 numpy
+pytest
