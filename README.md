@@ -4,7 +4,7 @@ This repository contains the material (notes, exercises and a challenge) for the
 
 ## Setting up an isolated python environment
 
-We recommend to set up a separate python environment that is isolated from your system's installation of python or any other version in your other projects. This is so that we can obtain a deterministic development environment with only the relevant python libraries and packages that are essential for this project.
+We recommend to set up a separate python environment that is isolated from your system's installation of python or any other installation of python configured for your other projects. This is so that we can obtain a deterministic development environment with only the relevant python libraries and packages that are essential for this project.
 
 You may use any tool to obtain a suitable python virtual environment, although the instructions here shall use `conda`.
 
