@@ -1,8 +1,9 @@
+colorama
 ghp-import
 jupyter-book
 jupyterlab
 line_profiler
 matplotlib
 numba
-numpy
+numpy==1.26.4
 pytest
