@@ -1,5 +1,6 @@
-jupyterlab
+ghp-import
 jupyter-book
+jupyterlab
 line_profiler
 matplotlib
 numba
