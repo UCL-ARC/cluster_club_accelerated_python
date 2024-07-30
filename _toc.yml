@@ -6,5 +6,6 @@ root: README
 chapters:
 - file: profiling
 - file: numpy_ndarrays
+- file: numba_jit_parallel
 - file: CONTRIBUTING
 - file: CONDUCT
