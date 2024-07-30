@@ -1,7 +1,6 @@
 # Contributing
 
-Contributions are welcome, and they are greatly appreciated! Every little bit
-helps, and credit will always be given. You can contribute in the ways listed below.
+Contributions are welcome, and they are greatly appreciated! The general contribution process is outlined below.
 
 ## Report Bugs
 
@@ -13,36 +12,22 @@ If you are reporting a bug, please include:
 * Any details about your local setup that might be helpful in troubleshooting.
 * Detailed steps to reproduce the bug.
 
-## Fix Bugs
+## Implement your changes and feedback
 
-Look through the GitHub issues for bugs. Anything tagged with "bug" and "help
-wanted" is open to whoever wants to implement it.
-
-## Implement Features
-
-Look through the GitHub issues for features. Anything tagged with "enhancement"
-and "help wanted" is open to whoever wants to implement it.
-
-## Write Documentation
-
-Techniques of High-Performance Computing - Lecture Notes could always use more documentation, whether as part of the
-official Techniques of High-Performance Computing - Lecture Notes docs, in docstrings, or even on the web in blog posts,
-articles, and such.
+The project could always be improved e.g. through fixes to typographical and grammatical errors. Readers might want to contribute additional numerical examples to better highlight the concepts presented here.
 
 ## Submit Feedback
 
-The best way to send feedback is to file an issue on GitHub.
+The best way to offer feedback is to file an issue on GitHub.
 
-If you are proposing a feature:
+For instance, if you are proposing a new acceleration framework for python codes:
 
-* Explain in detail how it would work.
+* Explain in detail how it works, providing links to official documentation of upstream projects.
 * Keep the scope as narrow as possible, to make it easier to implement.
-* Remember that this is a volunteer-driven project, and that contributions
-  are welcome :)
 
 ## Get Started
 
-Ready to contribute? Here's how to set up `Techniques of High-Performance Computing - Lecture Notes` for local development.
+Ready to contribute? Here's a step-by-step procedure of the general procedure.
 
 1. Fork the repo on GitHub.
 2. Clone your fork locally.
@@ -53,4 +38,4 @@ Ready to contribute? Here's how to set up `Techniques of High-Performance Comput
 
 ## Code of Conduct
 
-Please note that the Techniques of High-Performance Computing - Lecture Notes project is released with a [Contributor Code of Conduct](CONDUCT.md). By contributing to this project you agree to abide by its terms.
+Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By contributing, you agree to abide by its terms.
