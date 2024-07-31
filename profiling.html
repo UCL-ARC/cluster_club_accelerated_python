@@ -1,0 +1,1138 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Performance analysis of scientific code &#8212; Cluster club workshop on Accelerating Scientific Code in Python</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'profiling';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The numpy library for efficient numeric computing" href="numpy_ndarrays.html" />
+    <link rel="prev" title="Cluster club workshop on Accelerating Scientific Code in Python" href="README.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="README.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/ARC_logo.jpg" class="logo__image only-light" alt="Cluster club workshop on Accelerating Scientific Code in Python - Home"/>
+    <script>document.write(`<img src="_static/ARC_logo.jpg" class="logo__image only-dark" alt="Cluster club workshop on Accelerating Scientific Code in Python - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="README.html">
+                    Cluster club workshop on Accelerating Scientific Code in Python
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Performance analysis of scientific code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_ndarrays.html">The <code class="docutils literal notranslate"><span class="pre">numpy</span></code> library for efficient numeric computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numba_jit_parallel.html">Just-in-time compilation and parallelisation with Numba</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nbody_challenge.html">Challenge: N-body simulation of particles in Cosmology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CONDUCT.html">Code of Conduct</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/UCL-ARC/cluster_club_accelerated_python" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/UCL-ARC/cluster_club_accelerated_python/issues/new?title=Issue%20on%20page%20%2Fprofiling.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/profiling.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Performance analysis of scientific code</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bottlenecks-in-python-code">Bottlenecks in python code</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#background">Background</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-exporing-python-performance-with-computational-fluid-dynamics">Exercise: Exporing Python Performance with Computational Fluid Dynamics</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction-to-the-exercise">Introduction to the exercise</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#fluid-dynamics-a-brief-overview">Fluid Dynamics: a brief overview</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem">The Problem</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mathematical-background-optional">Mathematical background (optional)</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#an-algorithm">An algorithm</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#using-python">Using Python</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-run">Initial run</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#profiling-the-cfd-example-program">Profiling the CFD example program</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-cprofile">Using <code class="docutils literal notranslate"><span class="pre">cProfile</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-a-line-profiler">Using a line profiler</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#decorator-syntax">Decorator syntax</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#line-profiler-for-cfd-code">Line profiler for CFD code</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#viewing-the-line-profiler-results">Viewing the line profiler results</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interpreting-the-line-profiler-results">Interpreting the line profiler results</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next steps</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="performance-analysis-of-scientific-code">
+<h1>Performance analysis of scientific code<a class="headerlink" href="#performance-analysis-of-scientific-code" title="Link to this heading">#</a></h1>
+<section id="bottlenecks-in-python-code">
+<h2>Bottlenecks in python code<a class="headerlink" href="#bottlenecks-in-python-code" title="Link to this heading">#</a></h2>
+<section id="background">
+<h3>Background<a class="headerlink" href="#background" title="Link to this heading">#</a></h3>
+<p>It is often the case that we write code by directly transcribing scientific concepts (such as equations to solve numerical equations) into various programming idioms such as loops, by using the native data structures and built-in functionality of Python and its standard library.</p>
+<p>However, surprisingly this straightforward approach sometimes yields in sub-optimal performance wherein it takes a significant amount of time to compute the results.</p>
+<p>It is not that every operation in Python is slow. In fact, basic operations such as assigning values to variables, doing mathematical operations on scalars or on a small collection of entities, printing to the console, performing logical comparisons etc are usually fast enough to be not noticeable. In large scientific codebases, performance penalties typically arise within only a few sections of code that usually deal with certain critical operations involving large-scale numerical manipulations.</p>
+<p>Hence, it is worthwhile to understand where the bottlenecks of the code lie, and how to mitigate them.</p>
+</section>
+<section id="exercise-exporing-python-performance-with-computational-fluid-dynamics">
+<h3>Exercise: Exporing Python Performance with Computational Fluid Dynamics<a class="headerlink" href="#exercise-exporing-python-performance-with-computational-fluid-dynamics" title="Link to this heading">#</a></h3>
+<section id="introduction-to-the-exercise">
+<h4>Introduction to the exercise<a class="headerlink" href="#introduction-to-the-exercise" title="Link to this heading">#</a></h4>
+<p>This exercise takes an example from one of the most common applications of HPC resources: Fluid Dynamics. We will look at computational bottlenecks that arise in computing the results using naively written code.</p>
+</section>
+<section id="fluid-dynamics-a-brief-overview">
+<h4>Fluid Dynamics: a brief overview<a class="headerlink" href="#fluid-dynamics-a-brief-overview" title="Link to this heading">#</a></h4>
+<p>Fluid Dynamics is the study of the mechanics of fluid flow, liquids and gases in motion. This can encompass aerodynamics and hydrodynamics. It has wide ranging applications from vessel and structure design to weather and traffic modelling. Simulating and solving fluid dynamic problems often requires large computational resources.</p>
+<p>Fluid dynamics is an example of continuous system that can be described by Partial Differential Equations. For a computer to simulate these systems, the equations must be discretised onto a grid. If this grid is regular, then a finite difference approach can be used. Using this method means that the value at any point in the grid is updated using some combination of the neighbouring points.</p>
+<p><em>Discretisation</em> is the process of approximating a continuous (i.e. infinite-dimensional) problem by a finite-dimensional problem suitable for a computer. This is often accomplished by putting the calculations into a grid or similar construct.</p>
+</section>
+<section id="the-problem">
+<h4>The Problem<a class="headerlink" href="#the-problem" title="Link to this heading">#</a></h4>
+<p>In this exercise the finite difference approach is used to determine the flow pattern of a fluid in a cavity. For simplicity, the liquid is assumed to have zero viscosity, which implies that there can be no vortices (i.e. no whirlpools) in the flow. The cavity is a square box with an inlet on one side and an outlet on another as shown below.</p>
+<p><img alt="cavity image" src="_images/cavity.png" /></p>
+</section>
+<section id="mathematical-background-optional">
+<h4>Mathematical background (optional)<a class="headerlink" href="#mathematical-background-optional" title="Link to this heading">#</a></h4>
+<p>In two dimensions it is easiest to work with the stream function
+<span class="math notranslate nohighlight">\(\psi\)</span> (see below for how this relates to the fluid velocity). For zero viscosity, <span class="math notranslate nohighlight">\(\psi\)</span> satisfies the following equation:</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla^2 \psi = \frac{\partial^2 \psi}{\partial x^2}
+\]</div>
+<p>The finite difference version of this equation is:</p>
+<div class="math notranslate nohighlight">
+\[
+\psi_{i-1,j} + \psi_{i+1,j} + \psi_{i,j-1} + \psi_{i,j+1}
+-4 \psi_{i,j} = 0.
+\]</div>
+<p>With the boundary values fixed, the stream function can be calculated for each point in the grid by averaging the value
+at that point with its four nearest neighbours. The process continues until the algorithm converges on a solution that
+stays unchanged by the averaging process. This simple approach
+to solving a PDE is called the Jacobi algorithm.</p>
+<p>In order to obtain the flow pattern of the fluid in the cavity
+we want to compute the velocity field <span class="math notranslate nohighlight">\(\mathbf{u}(x,y)\)</span>. The <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> components of the velocity are related to the stream function by</p>
+<div class="math notranslate nohighlight">
+\[
+u_x =  \frac{\partial \psi}{\partial y} = \frac{1}{2}(\psi_{i,j+1} - \psi_{i,j-1}),
+\quad
+u_y = -\frac{\partial \psi}{\partial x} = \frac{1}{2}(\psi_{i+1,j}-\psi_{i-1,j}).
+\]</div>
+<p>This means that the velocity of the fluid at each grid point
+can also be calculated from the surrounding grid points. The magnitude of the velocity <span class="math notranslate nohighlight">\(\mathbf{u}\)</span> is
+given by <span class="math notranslate nohighlight">\(u = (u_x^2 + u_y^2)^{1/2}\)</span>.</p>
+</section>
+<section id="an-algorithm">
+<h4>An algorithm<a class="headerlink" href="#an-algorithm" title="Link to this heading">#</a></h4>
+<p>The outline of the algorithm for calculating the velocities is
+as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Set</span> <span class="n">the</span> <span class="n">boundary</span> <span class="n">values</span> <span class="k">for</span> <span class="n">stream</span> <span class="n">function</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">convergence</span> <span class="ow">is</span> <span class="n">FALSE</span><span class="p">):</span>
+     <span class="k">for</span> <span class="n">each</span> <span class="n">interior</span> <span class="n">grid</span> <span class="n">point</span><span class="p">:</span>
+         <span class="n">update</span> <span class="n">the</span> <span class="n">stream</span> <span class="n">function</span>
+     
+     <span class="n">compute</span> <span class="n">convergence</span> <span class="n">criteria</span>
+
+<span class="k">for</span> <span class="n">each</span> <span class="n">interior</span> <span class="n">grid</span> <span class="n">point</span><span class="p">:</span>
+    <span class="n">compute</span> <span class="n">x</span> <span class="n">component</span> <span class="n">of</span> <span class="n">velocity</span>
+    <span class="n">compute</span> <span class="n">y</span> <span class="n">component</span> <span class="n">of</span> <span class="n">velocity</span>
+</pre></div>
+</div>
+<p>For simplicity, here we simply run the calculation for a fixed number of iterations; a real simulation would continue until some chosen accuracy was achieved.</p>
+</section>
+<section id="using-python">
+<h4>Using Python<a class="headerlink" href="#using-python" title="Link to this heading">#</a></h4>
+<p>You are given a basic (but inefficient) starter code in <code class="docutils literal notranslate"><span class="pre">./cfd_python_lists</span></code> that uses Python lists to run the simulation.
+There are a number of different files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> cfd_python_lists
+ ├─ cfd.py         # python driver script
+ └─ jacobi.py      # Jacobi algorthm code  
+</pre></div>
+</div>
+<p>Look at the structure of the <code class="docutils literal notranslate"><span class="pre">cfd.py</span></code> code. In particular, note:</p>
+<ul class="simple">
+<li><p>How the external “jacobi” function is included</p></li>
+<li><p>How the lists are declared and initialised to zero</p></li>
+<li><p>How the timing works</p></li>
+</ul>
+</section>
+<section id="initial-run">
+<h4>Initial run<a class="headerlink" href="#initial-run" title="Link to this heading">#</a></h4>
+<p>Jacobi iterations take long to converge, approximately at least 10000 steps are needed for an acceptable convergence this problem for a grid size of 128 x 128 (which is still not quite a realistic grid size).</p>
+<p>Navigate to the <code class="docutils literal notranslate"><span class="pre">cfd_python_lists</span></code> subdirectory and run the main program:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>prompt:/path/to/cfd_python_lists&gt;<span class="w"> </span>python<span class="w"> </span>cfd.py<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">10000</span>
+</pre></div>
+</div>
+<p>As the program is running you should see output that looks something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">2</span><span class="n">D</span> <span class="n">CFD</span> <span class="n">Simulation</span>
+<span class="o">=================</span>
+<span class="n">Scale</span> <span class="n">factor</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">Iterations</span>   <span class="o">=</span> <span class="mi">10000</span>
+
+<span class="n">Initialisation</span> <span class="n">took</span> <span class="mf">0.00022</span><span class="n">s</span>
+
+<span class="n">Grid</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">128</span> <span class="n">x</span> <span class="mi">128</span>
+
+<span class="n">Starting</span> <span class="n">main</span> <span class="n">Jacobi</span> <span class="n">loop</span><span class="o">...</span>
+<span class="n">completed</span> <span class="n">iteration</span> <span class="mi">1000</span>
+<span class="n">completed</span> <span class="n">iteration</span> <span class="mi">2000</span>
+<span class="n">completed</span> <span class="n">iteration</span> <span class="mi">3000</span>
+<span class="n">completed</span> <span class="n">iteration</span> <span class="mi">4000</span>
+<span class="n">completed</span> <span class="n">iteration</span> <span class="mi">5000</span>
+<span class="n">completed</span> <span class="n">iteration</span> <span class="mi">6000</span>
+<span class="n">completed</span> <span class="n">iteration</span> <span class="mi">7000</span>
+<span class="n">completed</span> <span class="n">iteration</span> <span class="mi">8000</span>
+<span class="n">completed</span> <span class="n">iteration</span> <span class="mi">9000</span>
+<span class="n">completed</span> <span class="n">iteration</span> <span class="mi">10000</span>
+
+<span class="o">...</span><span class="n">finished</span>
+
+<span class="n">Calculation</span> <span class="n">took</span> <span class="mf">55.79600</span><span class="n">s</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="profiling-the-cfd-example-program">
+<h2>Profiling the CFD example program<a class="headerlink" href="#profiling-the-cfd-example-program" title="Link to this heading">#</a></h2>
+<section id="using-cprofile">
+<h3>Using <code class="docutils literal notranslate"><span class="pre">cProfile</span></code><a class="headerlink" href="#using-cprofile" title="Link to this heading">#</a></h3>
+<p>Python has a nice, built-in statistical profiling module called cProfile. You can use it to collect data from your program without having to manually add any instrumentation. Optionally, you can then visualize the data collected using additional tools such as <code class="docutils literal notranslate"><span class="pre">SnakeViz</span></code> and <code class="docutils literal notranslate"><span class="pre">gprof2dot</span></code>.</p>
+<p>We will now profile the CFD program and collect data using <code class="docutils literal notranslate"><span class="pre">cprofile</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">cProfile</span> <span class="o">-</span><span class="n">o</span> <span class="n">profile_data</span><span class="o">.</span><span class="n">prof</span> <span class="o">./</span><span class="n">cfd</span><span class="o">.</span><span class="n">py</span> <span class="mi">4</span> <span class="mi">10000</span>
+</pre></div>
+</div>
+<p>This example will generate a <code class="docutils literal notranslate"><span class="pre">profile_data.prof</span></code> file which contains the profiling data. Note that this is a binary (i.e. not plain-text) file which needs to be further processed by a suitable tool.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pstats</span><span class="o">,</span> <span class="nn">os</span>
+<span class="n">stats</span> <span class="o">=</span> <span class="n">pstats</span><span class="o">.</span><span class="n">Stats</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;/cfd_python_lists/profile_data.prof&#39;</span><span class="p">)</span> <span class="c1"># Please use the correct relative path to this file</span>
+<span class="n">stats</span><span class="o">.</span><span class="n">sort_stats</span><span class="p">(</span><span class="s1">&#39;tottime&#39;</span><span class="p">)</span>
+<span class="n">stats</span><span class="o">.</span><span class="n">print_stats</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mon Jul 29 15:17:19 2024    /home/krishnakumar/Documents/work_ucl_arc/arc_cluster_club/cluster_club_accelerated_python/cfd_python_lists/profile_data.prof
+
+         7272 function calls (7095 primitive calls) in 53.100 seconds
+
+   Ordered by: internal time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1   53.073   53.073   53.074   53.074 /home/krishnakumar/Documents/work_ucl_arc/arc_cluster_club/cluster_club_accelerated_python/cfd_python_lists/jacobi.py:10(jacobi)
+       10    0.004    0.000    0.004    0.000 {built-in method _imp.create_dynamic}
+       16    0.004    0.000    0.004    0.000 {built-in method marshal.loads}
+    57/55    0.001    0.000    0.002    0.000 {built-in method builtins.__build_class__}
+       81    0.001    0.000    0.004    0.000 &lt;frozen importlib._bootstrap_external&gt;:1593(find_spec)
+        1    0.001    0.001   53.075   53.075 ./cfd.py:20(main)
+      130    0.001    0.000    0.001    0.000 {built-in method posix.stat}
+      382    0.001    0.000    0.001    0.000 &lt;frozen importlib._bootstrap_external&gt;:126(_path_join)
+       10    0.001    0.000    0.001    0.000 {built-in method _imp.exec_dynamic}
+       16    0.001    0.000    0.004    0.000 &lt;frozen importlib._bootstrap_external&gt;:751(_compile_bytecode)
+       27    0.000    0.000    0.005    0.000 &lt;frozen importlib._bootstrap&gt;:1240(_find_spec)
+       16    0.000    0.000    0.000    0.000 {method &#39;read&#39; of &#39;_io.BufferedReader&#39; objects}
+       16    0.000    0.000    0.000    0.000 {built-in method _io.open_code}
+       19    0.000    0.000    0.000    0.000 {method &#39;write&#39; of &#39;_io.TextIOWrapper&#39; objects}
+     27/1    0.000    0.000    0.025    0.025 &lt;frozen importlib._bootstrap&gt;:1349(_find_and_load)
+      796    0.000    0.000    0.000    0.000 {method &#39;rstrip&#39; of &#39;str&#39; objects}
+       16    0.000    0.000    0.006    0.000 &lt;frozen importlib._bootstrap_external&gt;:1062(get_code)
+       26    0.000    0.000    0.004    0.000 &lt;frozen importlib._bootstrap_external&gt;:1491(_get_spec)
+       27    0.000    0.000    0.001    0.000 &lt;frozen importlib._bootstrap&gt;:304(acquire)
+       32    0.000    0.000    0.000    0.000 {built-in method __new__ of type object at 0x5a4f23552f80}
+        1    0.000    0.000    0.005    0.005 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/shutil.py:1(&lt;module&gt;)
+      416    0.000    0.000    0.000    0.000 {method &#39;join&#39; of &#39;str&#39; objects}
+       32    0.000    0.000    0.001    0.000 &lt;frozen importlib._bootstrap_external&gt;:482(cache_from_source)
+     27/1    0.000    0.000    0.024    0.024 &lt;frozen importlib._bootstrap&gt;:911(_load_unlocked)
+       27    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:426(_get_module_lock)
+       27    0.000    0.000    0.001    0.000 &lt;frozen importlib._bootstrap&gt;:733(_init_module_attrs)
+       39    0.000    0.000    0.000    0.000 {method &#39;format&#39; of &#39;str&#39; objects}
+       27    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:372(release)
+       26    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:802(spec_from_file_location)
+      424    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:491(_verbose_message)
+     17/1    0.000    0.000   53.100   53.100 {built-in method builtins.exec}
+        1    0.000    0.000    0.004    0.004 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/pickle.py:1(&lt;module&gt;)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/_compat_pickle.py:1(&lt;module&gt;)
+     27/1    0.000    0.000    0.025    0.025 &lt;frozen importlib._bootstrap&gt;:1304(_find_and_load_unlocked)
+      192    0.000    0.000    0.000    0.000 {built-in method builtins.getattr}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/collections/__init__.py:355(namedtuple)
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.eval}
+       27    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/site-packages/_distutils_hack/__init__.py:103(find_spec)
+       27    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:124(setdefault)
+      106    0.000    0.000    0.001    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/__init__.py:164(match)
+       27    0.000    0.000    0.005    0.000 &lt;frozen importlib._bootstrap&gt;:806(module_from_spec)
+      273    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}
+      106    0.000    0.000    0.001    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/__init__.py:280(_compile)
+      171    0.000    0.000    0.000    0.000 {method &#39;rpartition&#39; of &#39;str&#39; objects}
+       16    0.000    0.000    0.001    0.000 &lt;frozen importlib._bootstrap_external&gt;:1183(get_data)
+      130    0.000    0.000    0.001    0.000 &lt;frozen importlib._bootstrap_external&gt;:140(_path_stat)
+       27    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:162(__enter__)
+       26    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:1588(_get_spec)
+       32    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:132(_path_split)
+        1    0.000    0.000    0.003    0.003 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/random.py:1(&lt;module&gt;)
+       16    0.000    0.000    0.000    0.000 {method &#39;__exit__&#39; of &#39;_io._IOBase&#39; objects}
+     16/1    0.000    0.000    0.024    0.024 &lt;frozen importlib._bootstrap_external&gt;:989(exec_module)
+     64/2    0.000    0.000    0.024    0.012 &lt;frozen importlib._bootstrap&gt;:480(_call_with_frames_removed)
+       26    0.000    0.000    0.001    0.000 &lt;frozen importlib._bootstrap_external&gt;:611(_get_cached)
+      106    0.000    0.000    0.000    0.000 {method &#39;match&#39; of &#39;re.Pattern&#39; objects}
+  189/187    0.000    0.000    0.000    0.000 {built-in method builtins.len}
+      103    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:1469(_path_importer_cache)
+       48    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:84(_unpack_uint32)
+       26    0.000    0.000    0.004    0.000 &lt;frozen importlib._bootstrap_external&gt;:1520(find_spec)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_parser.py:512(_parse)
+      106    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:1226(__exit__)
+       27    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:445(cb)
+       32    0.000    0.000    0.000    0.000 {built-in method builtins.max}
+       27    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:74(__new__)
+       27    0.000    0.000    0.001    0.000 &lt;frozen importlib._bootstrap&gt;:416(__enter__)
+        2    0.000    0.000    0.000    0.000 {built-in method posix.listdir}
+      106    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:1222(__enter__)
+       16    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:666(_classify_pyc)
+      160    0.000    0.000    0.000    0.000 {built-in method _imp.acquire_lock}
+        1    0.000    0.000    0.000    0.000 {function Random.seed at 0x7aeb7e839260}
+       27    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:79(__init__)
+        5    0.000    0.000    0.000    0.000 {built-in method _abc._abc_init}
+       16    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:699(_validate_timestamp_pyc)
+      160    0.000    0.000    0.000    0.000 {built-in method _imp.release_lock}
+       24    0.000    0.000    0.000    0.000 {built-in method builtins.locals}
+       27    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:232(__init__)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_parser.py:452(_parse_sub)
+        1    0.000    0.000    0.010    0.010 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/tempfile.py:1(&lt;module&gt;)
+        1    0.000    0.000    0.000    0.000 {method &#39;disable&#39; of &#39;_lsprof.Profiler&#39; objects}
+      101    0.000    0.000    0.000    0.000 {method &#39;append&#39; of &#39;list&#39; objects}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_compiler.py:511(_compile_info)
+       82    0.000    0.000    0.000    0.000 {method &#39;get&#39; of &#39;dict&#39; objects}
+       16    0.000    0.000    0.000    0.000 {built-in method _imp._fix_co_filename}
+       42    0.000    0.000    0.001    0.000 &lt;frozen importlib._bootstrap&gt;:632(cached)
+       16    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:643(_check_name_wrapper)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/pickle.py:1129(_Unpickler)
+       27    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:82(remove)
+       64    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:134(&lt;genexpr&gt;)
+       31    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:150(_path_is_mode_type)
+       65    0.000    0.000    0.000    0.000 {built-in method builtins.hasattr}
+        3    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_compiler.py:243(_optimize_charset)
+       29    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:159(_path_isfile)
+       16    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:48(_new_module)
+       27    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:420(__exit__)
+        1    0.000    0.000    0.022    0.022 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/site-packages/line_profiler/line_profiler.py:1(&lt;module&gt;)
+       26    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:1128(find_spec)
+       38    0.000    0.000    0.000    0.000 {method &#39;startswith&#39; of &#39;str&#39; objects}
+        1    0.000    0.000    0.001    0.001 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:1(&lt;module&gt;)
+       31    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:645(parent)
+       54    0.000    0.000    0.000    0.000 {method &#39;__exit__&#39; of &#39;_thread.RLock&#39; objects}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_compiler.py:573(_code)
+       36    0.000    0.000    0.000    0.000 {method &#39;endswith&#39; of &#39;str&#39; objects}
+       16    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:1202(path_stats)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/tempfile.py:685(SpooledTemporaryFile)
+       26    0.000    0.000    0.000    0.000 {built-in method _imp.find_frozen}
+       27    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:982(find_spec)
+        1    0.000    0.000    0.001    0.001 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/lzma.py:1(&lt;module&gt;)
+       10    0.000    0.000    0.004    0.000 &lt;frozen importlib._bootstrap_external&gt;:1287(create_module)
+       27    0.000    0.000    0.000    0.000 {built-in method _imp.is_builtin}
+       27    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:173(__exit__)
+      2/1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_compiler.py:37(_compile)
+       48    0.000    0.000    0.000    0.000 {built-in method from_bytes}
+        1    0.000    0.000   53.100   53.100 ./cfd.py:1(&lt;module&gt;)
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.dir}
+        1    0.000    0.000    0.001    0.001 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_compiler.py:740(compile)
+       32    0.000    0.000    0.000    0.000 {method &#39;rfind&#39; of &#39;str&#39; objects}
+       28    0.000    0.000    0.000    0.000 {method &#39;pop&#39; of &#39;dict&#39; objects}
+       27    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:180(_path_isabs)
+       54    0.000    0.000    0.000    0.000 {built-in method _thread.get_ident}
+       10    0.000    0.000    0.001    0.000 &lt;frozen importlib._bootstrap_external&gt;:1295(exec_module)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/functools.py:35(update_wrapper)
+       58    0.000    0.000    0.000    0.000 {built-in method posix.fspath}
+       27    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:185(_path_abspath)
+        2    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:1567(__init__)
+        1    0.000    0.000    0.001    0.001 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/bz2.py:1(&lt;module&gt;)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/pickle.py:401(_Pickler)
+       27    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:599(__init__)
+       27    0.000    0.000    0.000    0.000 {built-in method _weakref._remove_dead_weakref}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/random.py:110(Random)
+       81    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:71(_relax_case)
+        2    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:1456(_path_hooks)
+       30    0.000    0.000    0.000    0.000 {method &#39;pop&#39; of &#39;list&#39; objects}
+        5    0.000    0.000    0.000    0.000 &lt;frozen abc&gt;:105(__new__)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/site-packages/line_profiler/explicit_profiler.py:1(&lt;module&gt;)
+       27    0.000    0.000    0.000    0.000 {method &#39;remove&#39; of &#39;list&#39; objects}
+        1    0.000    0.000    0.023    0.023 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/site-packages/line_profiler/__init__.py:1(&lt;module&gt;)
+        1    0.000    0.000    0.024    0.024 /home/krishnakumar/Documents/work_ucl_arc/arc_cluster_club/cluster_club_accelerated_python/cfd_python_lists/jacobi.py:1(&lt;module&gt;)
+       28    0.000    0.000    0.000    0.000 {built-in method _thread.allocate_lock}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_parser.py:969(parse)
+       85    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/_compat_pickle.py:167(&lt;genexpr&gt;)
+        8    0.000    0.000    0.000    0.000 {method &#39;extend&#39; of &#39;list&#39; objects}
+        2    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/enum.py:1562(__and__)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:157(HelpFormatter)
+       27    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:412(__init__)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/tempfile.py:860(TemporaryDirectory)
+        2    0.000    0.000    0.000    0.000 &lt;frozen zipimport&gt;:64(__init__)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/random.py:135(seed)
+        2    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:1644(_fill_cache)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_compiler.py:386(_mk_bitmap)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/fnmatch.py:1(&lt;module&gt;)
+        1    0.000    0.000    0.001    0.001 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/struct.py:1(&lt;module&gt;)
+       43    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/_compat_pickle.py:165(&lt;genexpr&gt;)
+        5    0.000    0.000    0.000    0.000 {method &#39;update&#39; of &#39;dict&#39; objects}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/bisect.py:1(&lt;module&gt;)
+        2    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:1685(path_hook_for_FileFinder)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:1742(ArgumentParser)
+      2/1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_parser.py:178(getwidth)
+       13    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_parser.py:261(get)
+        9    0.000    0.000    0.000    0.000 {built-in method builtins.setattr}
+       27    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:158(__init__)
+        1    0.000    0.000    0.000    0.000 {built-in method _imp.create_builtin}
+       10    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_parser.py:168(__getitem__)
+        2    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/enum.py:726(__call__)
+        1    0.000    0.000    0.000    0.000 {built-in method math.exp}
+       17    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_parser.py:240(__next)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/site-packages/line_profiler/explicit_profiler.py:272(_implicit_setup)
+       11    0.000    0.000    0.000    0.000 {method &#39;find&#39; of &#39;bytearray&#39; objects}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/bz2.py:26(BZ2File)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/functools.py:518(decorating_function)
+       27    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:653(has_location)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/lzma.py:38(LZMAFile)
+        6    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/enum.py:1544(_get_value)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/_compression.py:33(DecompressReader)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/_compression.py:1(&lt;module&gt;)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/random.py:126(__init__)
+        2    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/site-packages/line_profiler/explicit_profiler.py:280(&lt;genexpr&gt;)
+        3    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_compiler.py:216(_compile_charset)
+        2    0.000    0.000    0.000    0.000 {built-in method builtins.any}
+        1    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:662(spec_from_loader)
+        2    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_parser.py:449(_uniq)
+       16    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:1153(__init__)
+        1    0.000    0.000    0.000    0.000 &lt;frozen os&gt;:709(__getitem__)
+       24    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/site-packages/_distutils_hack/__init__.py:110(&lt;lambda&gt;)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/random.py:222(__init_subclass__)
+       16    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:1178(get_filename)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/site-packages/line_profiler/explicit_profiler.py:236(__init__)
+        1    0.000    0.000    0.000    0.000 &lt;frozen os&gt;:791(encode)
+        9    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_parser.py:256(match)
+       16    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:1573(&lt;genexpr&gt;)
+        1    0.000    0.000    0.000    0.000 &lt;frozen _collections_abc&gt;:804(get)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/site-packages/line_profiler/line_profiler.py:53(LineProfiler)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/tempfile.py:132(_RandomNameSequence)
+        4    0.000    0.000    0.000    0.000 {built-in method time.time}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:949(_StoreAction)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:1672(_ArgumentGroup)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/tempfile.py:432(_TemporaryFileCloser)
+       10    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:1276(__init__)
+        1    0.000    0.000    0.000    0.000 {built-in method sys.exit}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_parser.py:953(fix_flags)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:1362(_ActionsContainer)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/site-packages/line_profiler/explicit_profiler.py:310(__call__)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:1287(FileType)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_parser.py:231(__init__)
+       16    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:986(create_module)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/pickle.py:194(_Framer)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:984(_StoreConstAction)
+        4    0.000    0.000    0.000    0.000 {built-in method builtins.min}
+        1    0.000    0.000    0.000    0.000 {built-in method posix.getcwd}
+        2    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap_external&gt;:164(_path_isdir)
+        2    0.000    0.000    0.000    0.000 {built-in method fromkeys}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:1176(_SubParsersAction)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/random.py:876(SystemRandom)
+        1    0.000    0.000    0.000    0.000 {built-in method posix.register_at_fork}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_compiler.py:436(_get_literal_prefix)
+        4    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_parser.py:293(tell)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/_compression.py:9(BaseStream)
+        2    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/enum.py:1129(__new__)
+        1    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:501(_requires_builtin_wrapper)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/site-packages/line_profiler/explicit_profiler.py:174(GlobalProfiler)
+        4    0.000    0.000    0.000    0.000 {built-in method sys.intern}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:892(BooleanOptionalAction)
+        4    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_parser.py:164(__len__)
+        3    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/site-packages/line_profiler/explicit_profiler.py:282(&lt;genexpr&gt;)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/tempfile.py:475(_TemporaryFileWrapper)
+        4    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/collections/__init__.py:429(&lt;genexpr&gt;)
+        3    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_parser.py:176(append)
+        7    0.000    0.000    0.000    0.000 {built-in method builtins.ord}
+        4    0.000    0.000    0.000    0.000 {method &#39;__contains__&#39; of &#39;frozenset&#39; objects}
+        4    0.000    0.000    0.000    0.000 {method &#39;isidentifier&#39; of &#39;str&#39; objects}
+        1    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:989(create_module)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/pickle.py:257(_Unframer)
+        1    0.000    0.000    0.000    0.000 {built-in method _sre.compile}
+        3    0.000    0.000    0.000    0.000 {method &#39;items&#39; of &#39;dict&#39; objects}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:109(_AttributeHolder)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/functools.py:479(lru_cache)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:1714(_MutuallyExclusiveGroup)
+        2    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_compiler.py:570(isstring)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:794(Action)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_compiler.py:467(_get_charset_prefix)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_compiler.py:398(_simple)
+        2    0.000    0.000    0.000    0.000 {built-in method math.log}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:765(ArgumentError)
+        1    0.000    0.000    0.000    0.000 {method &#39;split&#39; of &#39;str&#39; objects}
+        1    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:997(exec_module)
+        1    0.000    0.000    0.000    0.000 {method &#39;encode&#39; of &#39;str&#39; objects}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:1129(_HelpAction)
+        3    0.000    0.000    0.000    0.000 {method &#39;add&#39; of &#39;set&#39; objects}
+        1    0.000    0.000    0.000    0.000 {method &#39;translate&#39; of &#39;bytearray&#39; objects}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:1342(Namespace)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:1148(_VersionAction)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:1079(_AppendConstAction)
+        2    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_parser.py:113(__init__)
+        2    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_parser.py:83(groups)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/pickle.py:73(PickleError)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:731(MetavarTypeHelpFormatter)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/shutil.py:83(RegistryError)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_parser.py:172(__setitem__)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:204(_Section)
+        2    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_compiler.py:428(_get_iscased)
+        1    0.000    0.000    0.000    0.000 {method &#39;lower&#39; of &#39;str&#39; objects}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/pickle.py:97(_Stop)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:1178(_ChoicesPseudoAction)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:1106(_CountAction)
+        1    0.000    0.000    0.000    0.000 {built-in method _imp.exec_builtin}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:1041(_AppendAction)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:691(RawTextHelpFormatter)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:680(RawDescriptionHelpFormatter)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:1276(_ExtendAction)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/re/_parser.py:77(__init__)
+        1    0.000    0.000    0.000    0.000 {method &#39;replace&#39; of &#39;str&#39; objects}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:1007(_StoreTrueAction)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:702(ArgumentDefaultsHelpFormatter)
+        1    0.000    0.000    0.000    0.000 &lt;string&gt;:1(&lt;module&gt;)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/shutil.py:70(SameFileError)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/pickle.py:77(PicklingError)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:1024(_StoreFalseAction)
+        1    0.000    0.000    0.000    0.000 {built-in method sys._getframemodulename}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/shutil.py:67(Error)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/site-packages/line_profiler/explicit_profiler.py:304(disable)
+        1    0.000    0.000    0.000    0.000 {built-in method math.sqrt}
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/shutil.py:77(ExecError)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/pickle.py:84(UnpicklingError)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/shutil.py:73(SpecialFileError)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/shutil.py:87(_GiveupOnFastCopy)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/argparse.py:785(ArgumentTypeError)
+        1    0.000    0.000    0.000    0.000 /home/krishnakumar/miniforge3/envs/condaenv_arc_clusterclub/lib/python3.12/shutil.py:80(ReadError)
+        1    0.000    0.000    0.000    0.000 &lt;frozen importlib._bootstrap&gt;:1014(is_package)
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;pstats.Stats at 0x7c06f8625130&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>It is seen that the most time-consuming part of the code is the function calls spent in evaluating line 9 of <code class="docutils literal notranslate"><span class="pre">jacobi.py</span></code> which is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">jacobi</span><span class="p">(</span><span class="n">niter</span><span class="p">,</span> <span class="n">psi</span><span class="p">):</span>
+</pre></div>
+</div>
+<p>This indicates to us that <code class="docutils literal notranslate"><span class="pre">jacobi</span></code> is an expensive function to evaluate. However, that is all we get to know at this stage. <code class="docutils literal notranslate"><span class="pre">cprofile</span></code> has a reasonably low overhead, but only gives information at the function call level, and not at the level of individual lines.</p>
+</section>
+<section id="using-a-line-profiler">
+<h3>Using a line profiler<a class="headerlink" href="#using-a-line-profiler" title="Link to this heading">#</a></h3>
+<p>Albeit not in the standard library, there exist third-party line profiling tools available as python libraries. We shall use the popular <a class="reference external" href="https://github.com/pyutils/line_profiler"><code class="docutils literal notranslate"><span class="pre">pyutils/line_profiler</span></code></a> line profiler (already listed in the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> for this workshop’s environment) for further analysis of our CFD code.</p>
+<section id="decorator-syntax">
+<h4>Decorator syntax<a class="headerlink" href="#decorator-syntax" title="Link to this heading">#</a></h4>
+<p>The python interpreter can be given additional context and meaning on how to “process” <em>functions</em> in a special manner. To achieve this, we use the decorator syntax, which is to prepend the line immediately above the function under consideration with a line of code starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>. For the <code class="docutils literal notranslate"><span class="pre">line_profiler</span></code> library, the decorator syntax to be used is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@line_profiler</span><span class="o">.</span><span class="n">profile</span>
+<span class="k">def</span> <span class="nf">myfun</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span><span class="n">arg2</span><span class="p">,</span><span class="n">arg3</span><span class="p">):</span>
+   <span class="c1"># some lines of function body</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="line-profiler-for-cfd-code">
+<h3>Line profiler for CFD code<a class="headerlink" href="#line-profiler-for-cfd-code" title="Link to this heading">#</a></h3>
+<p>In our CFD example, we will first import the <code class="docutils literal notranslate"><span class="pre">line_profiler</span></code> at the top of the relevant file <code class="docutils literal notranslate"><span class="pre">jacobi.py</span></code>. Next, we decorate the <code class="docutils literal notranslate"><span class="pre">jacobi</span></code> function in <code class="docutils literal notranslate"><span class="pre">jacobi.py</span></code>. Not that <code class="docutils literal notranslate"><span class="pre">line_profiler</span></code> is quite invasive and has high overheads. Therefore, to find out the bottlenecks, it may be appropriate to reduce the grid size (e.g. use 64 x 64 grid i.e. a scale factor of 3) and reduce the number of jacobi iterations (say 5000). Finally, we set the environment variable LINE_PROFILE=1 as shown below, and run the script as normal:</p>
+<blockquote>
+<div><p>On Linux and macOS</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>prompt:/path/to/cfd_python_lists&gt;<span class="w"> </span><span class="nv">LINE_PROFILE</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>python<span class="w"> </span>cfd.py<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">5000</span>
+</pre></div>
+</div>
+</div></blockquote>
+<blockquote>
+<div><p>On Windows</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prompt</span><span class="p">:</span><span class="n">C</span><span class="p">:</span>\<span class="n">path</span>\<span class="n">to</span>\<span class="n">cfd_python_lists</span><span class="o">&gt;</span> <span class="n">setx</span> <span class="n">LINE_PROFILE</span> <span class="mi">1</span>
+<span class="n">prompt</span><span class="p">:</span><span class="n">C</span><span class="p">:</span>\<span class="n">path</span>\<span class="n">to</span>\<span class="n">cfd_python_lists</span><span class="o">&gt;</span> <span class="n">python</span> <span class="n">cfd</span><span class="o">.</span><span class="n">py</span> <span class="mi">3</span> <span class="mi">5000</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>When the script finishes, a summary of profile results are made available with output files written to disk, and instructions for inspecting details shown on screen.</p>
+<p>Typically, the line profiler will output 3 files: <code class="docutils literal notranslate"><span class="pre">profile_output.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">profile_output_&lt;timestamp&gt;.txt</span></code>, and <code class="docutils literal notranslate"><span class="pre">profile_output.lprof</span></code> and the last few lines of console output will look something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Timer</span> <span class="n">unit</span><span class="p">:</span> <span class="mf">1e-09</span> <span class="n">s</span>
+
+ <span class="mf">98.94</span> <span class="n">seconds</span> <span class="o">-</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">krishnakumar</span><span class="o">/</span><span class="n">Documents</span><span class="o">/</span><span class="n">work_ucl_arc</span><span class="o">/</span><span class="n">arc_cluster_club</span><span class="o">/</span><span class="n">cluster_club_accelerated_python</span><span class="o">/</span><span class="n">cfd_python_lists</span><span class="o">/</span><span class="n">jacobi</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">10</span> <span class="o">-</span> <span class="n">jacobi</span>
+<span class="n">Wrote</span> <span class="n">profile</span> <span class="n">results</span> <span class="n">to</span> <span class="n">profile_output</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">Wrote</span> <span class="n">profile</span> <span class="n">results</span> <span class="n">to</span> <span class="n">profile_output_2024</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">19</span><span class="n">T133938</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">Wrote</span> <span class="n">profile</span> <span class="n">results</span> <span class="n">to</span> <span class="n">profile_output</span><span class="o">.</span><span class="n">lprof</span>
+<span class="n">To</span> <span class="n">view</span> <span class="n">details</span> <span class="n">run</span><span class="p">:</span>
+<span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">line_profiler</span> <span class="o">-</span><span class="n">rtmz</span> <span class="n">profile_output</span><span class="o">.</span><span class="n">lprof</span>
+</pre></div>
+</div>
+</section>
+<section id="viewing-the-line-profiler-results">
+<h3>Viewing the line profiler results<a class="headerlink" href="#viewing-the-line-profiler-results" title="Link to this heading">#</a></h3>
+<p>We follow the instructions in the last line of line profiler’s output, and invoke:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>line_profiler<span class="w"> </span>-rtmz<span class="w"> </span>profile_output.lprof
+</pre></div>
+</div>
+<p>which produces results alike:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Total</span> <span class="n">time</span><span class="p">:</span> <span class="mf">98.9386</span> <span class="n">s</span>
+<span class="n">File</span><span class="p">:</span> <span class="n">cfd_python_lists</span><span class="o">/</span><span class="n">jacobi</span><span class="o">.</span><span class="n">py</span>
+<span class="n">Function</span><span class="p">:</span> <span class="n">jacobi</span> <span class="n">at</span> <span class="n">line</span> <span class="mi">10</span>
+
+<span class="n">Line</span> <span class="c1">#      Hits         Time  Per Hit   % Time  Line Contents</span>
+<span class="o">==============================================================</span>
+    <span class="mi">10</span>                                           <span class="nd">@line_profiler</span><span class="o">.</span><span class="n">profile</span>
+    <span class="mi">11</span>                                           <span class="k">def</span> <span class="nf">jacobi</span><span class="p">(</span><span class="n">niter</span><span class="p">,</span> <span class="n">psi</span><span class="p">):</span>
+    <span class="mi">12</span>
+    <span class="mi">13</span>                                               <span class="c1"># Get the inner dimensions</span>
+    <span class="mi">14</span>         <span class="mi">1</span>          <span class="mf">0.8</span>      <span class="mf">0.8</span>      <span class="mf">0.0</span>      <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">psi</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span>
+    <span class="mi">15</span>         <span class="mi">1</span>          <span class="mf">0.3</span>      <span class="mf">0.3</span>      <span class="mf">0.0</span>      <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">psi</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span><span class="mi">2</span>
+    <span class="mi">16</span>
+    <span class="mi">17</span>                                               <span class="c1"># Define the temporary list and zero it</span>
+    <span class="mi">18</span>     <span class="mi">17031</span>       <span class="mf">2596.9</span>      <span class="mf">0.2</span>      <span class="mf">0.0</span>      <span class="n">tmp</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">2</span><span class="p">)]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="o">+</span><span class="mi">2</span><span class="p">)]</span>
+    <span class="mi">19</span>
+    <span class="mi">20</span>                                               <span class="c1"># Iterate for number of iterations</span>
+    <span class="mi">21</span>     <span class="mi">10000</span>       <span class="mf">3159.6</span>      <span class="mf">0.3</span>      <span class="mf">0.0</span>      <span class="k">for</span> <span class="nb">iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">niter</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+    <span class="mi">22</span>
+    <span class="mi">23</span>                                                   <span class="c1"># Loop over the elements computing the stream function</span>
+    <span class="mi">24</span>   <span class="mi">1290000</span>     <span class="mf">170220.1</span>      <span class="mf">0.1</span>      <span class="mf">0.2</span>          <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+    <span class="mi">25</span> <span class="mi">165120000</span>   <span class="mf">23959696.1</span>      <span class="mf">0.1</span>     <span class="mf">24.2</span>              <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+    <span class="mi">26</span> <span class="mi">163840000</span>   <span class="mf">31154880.0</span>      <span class="mf">0.2</span>     <span class="mf">31.5</span>                  <span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="p">(</span><span class="n">psi</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">psi</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">psi</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">psi</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="mi">27</span>
+    <span class="mi">28</span>                                                   <span class="c1"># Update psi</span>
+    <span class="mi">29</span>   <span class="mi">1290000</span>     <span class="mf">178970.8</span>      <span class="mf">0.1</span>      <span class="mf">0.2</span>          <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+    <span class="mi">30</span> <span class="mi">165120000</span>   <span class="mf">23053866.7</span>      <span class="mf">0.1</span>     <span class="mf">23.3</span>              <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+    <span class="mi">31</span> <span class="mi">163840000</span>   <span class="mf">20408242.6</span>      <span class="mf">0.1</span>     <span class="mf">20.6</span>                  <span class="n">psi</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+    <span class="mi">32</span>
+    <span class="mi">33</span>                                                   <span class="c1"># Debug output</span>
+    <span class="mi">34</span>     <span class="mi">10000</span>       <span class="mf">6647.4</span>      <span class="mf">0.7</span>      <span class="mf">0.0</span>          <span class="k">if</span> <span class="nb">iter</span><span class="o">%</span><span class="mi">1000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="mi">35</span>        <span class="mi">10</span>        <span class="mf">321.9</span>     <span class="mf">32.2</span>      <span class="mf">0.0</span>              <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;completed iteration </span><span class="si">{0}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">iter</span><span class="p">))</span>
+
+ <span class="mf">98.94</span> <span class="n">seconds</span> <span class="o">-</span> <span class="n">cfd_python_lists</span><span class="o">/</span><span class="n">jacobi</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">10</span> <span class="o">-</span> <span class="n">jacobi</span>
+</pre></div>
+</div>
+</section>
+<section id="interpreting-the-line-profiler-results">
+<h3>Interpreting the line profiler results<a class="headerlink" href="#interpreting-the-line-profiler-results" title="Link to this heading">#</a></h3>
+<p>The most salient lines in the line profile’s results are the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Line</span> <span class="c1">#      Hits         Time  Per Hit   % Time  Line Contents</span>
+<span class="o">==============================================================</span>
+    <span class="mi">18</span>     <span class="mi">17031</span>       <span class="mf">2596.9</span>      <span class="mf">0.2</span>      <span class="mf">0.0</span>      <span class="n">tmp</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">2</span><span class="p">)]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="o">+</span><span class="mi">2</span><span class="p">)]</span>
+    <span class="mi">21</span>     <span class="mi">10000</span>       <span class="mf">3159.6</span>      <span class="mf">0.3</span>      <span class="mf">0.0</span>      <span class="k">for</span> <span class="nb">iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">niter</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+    <span class="mi">23</span>                                                   <span class="c1"># Loop over the elements computing the stream function</span>
+    <span class="mi">24</span>   <span class="mi">1290000</span>     <span class="mf">170220.1</span>      <span class="mf">0.1</span>      <span class="mf">0.2</span>          <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+    <span class="mi">25</span> <span class="mi">165120000</span>   <span class="mf">23959696.1</span>      <span class="mf">0.1</span>     <span class="mf">24.2</span>              <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+    <span class="mi">26</span> <span class="mi">163840000</span>   <span class="mf">31154880.0</span>      <span class="mf">0.2</span>     <span class="mf">31.5</span>                  <span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="p">(</span><span class="n">psi</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">psi</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">psi</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">psi</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="mi">29</span>   <span class="mi">1290000</span>     <span class="mf">178970.8</span>      <span class="mf">0.1</span>      <span class="mf">0.2</span>          <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+    <span class="mi">30</span> <span class="mi">165120000</span>   <span class="mf">23053866.7</span>      <span class="mf">0.1</span>     <span class="mf">23.3</span>              <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+    <span class="mi">31</span> <span class="mi">163840000</span>   <span class="mf">20408242.6</span>      <span class="mf">0.1</span>     <span class="mf">20.6</span>                  <span class="n">psi</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>There are two key observations. The most time-consuming parts of the function are:</p>
+<ol class="arabic simple">
+<li><p>Looping through the elements of the 2D array leads to significant performance hits.</p></li>
+<li><p>Constructing and zero initialising a python list of lists using list comprehension</p></li>
+</ol>
+</section>
+</section>
+<section id="next-steps">
+<h2>Next steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
+<p>In the subsequent sessions, we will see how to address these code bottlenecks to improve performance</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="README.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Cluster club workshop on Accelerating Scientific Code in Python</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="numpy_ndarrays.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">The <code class="docutils literal notranslate"><span class="pre">numpy</span></code> library for efficient numeric computing</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bottlenecks-in-python-code">Bottlenecks in python code</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#background">Background</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-exporing-python-performance-with-computational-fluid-dynamics">Exercise: Exporing Python Performance with Computational Fluid Dynamics</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction-to-the-exercise">Introduction to the exercise</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#fluid-dynamics-a-brief-overview">Fluid Dynamics: a brief overview</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem">The Problem</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mathematical-background-optional">Mathematical background (optional)</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#an-algorithm">An algorithm</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#using-python">Using Python</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-run">Initial run</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#profiling-the-cfd-example-program">Profiling the CFD example program</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-cprofile">Using <code class="docutils literal notranslate"><span class="pre">cProfile</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-a-line-profiler">Using a line profiler</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#decorator-syntax">Decorator syntax</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#line-profiler-for-cfd-code">Line profiler for CFD code</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#viewing-the-line-profiler-results">Viewing the line profiler results</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interpreting-the-line-profiler-results">Interpreting the line profiler results</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next steps</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Krishnakumar Gopalakrishnan, Tuomas Koskela, Samantha Ahern (UCL-ARC) and Jamie Quinn
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,726 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>The numpy library for efficient numeric computing &#8212; Cluster club workshop on Accelerating Scientific Code in Python</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'numpy_ndarrays';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Just-in-time compilation and parallelisation with Numba" href="numba_jit_parallel.html" />
+    <link rel="prev" title="Performance analysis of scientific code" href="profiling.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="README.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/ARC_logo.jpg" class="logo__image only-light" alt="Cluster club workshop on Accelerating Scientific Code in Python - Home"/>
+    <script>document.write(`<img src="_static/ARC_logo.jpg" class="logo__image only-dark" alt="Cluster club workshop on Accelerating Scientific Code in Python - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="README.html">
+                    Cluster club workshop on Accelerating Scientific Code in Python
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="profiling.html">Performance analysis of scientific code</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">The <code class="docutils literal notranslate"><span class="pre">numpy</span></code> library for efficient numeric computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numba_jit_parallel.html">Just-in-time compilation and parallelisation with Numba</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nbody_challenge.html">Challenge: N-body simulation of particles in Cosmology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CONDUCT.html">Code of Conduct</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/UCL-ARC/cluster_club_accelerated_python" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/UCL-ARC/cluster_club_accelerated_python/issues/new?title=Issue%20on%20page%20%2Fnumpy_ndarrays.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/numpy_ndarrays.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>The numpy library for efficient numeric computing</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#performance-of-lists-for-aggregate-numeric-data">Performance of lists for aggregate numeric data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#performance-of-loops-on-aggregate-data">Performance of loops on aggregate data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simd-vectorisation">SIMD vectorisation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-numpy-library-for-numeric-computing">Using the <code class="docutils literal notranslate"><span class="pre">numpy</span></code> library for numeric computing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-numpy-vs-native-looping-over-lists-for-adding-two-vectors">Exercise: <code class="docutils literal notranslate"><span class="pre">numpy</span></code> vs native looping over lists for adding two vectors</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#first-using-native-python-lists">First using native python lists</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#and-loops">and loops ….</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#list-comprehension-vs-loops">List comprehension vs loops</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#now-switch-to-using-numpy-arrays">Now, switch to using Numpy arrays</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#and-performing-vectorised-addition-instead-of-loops">and performing vectorised addition instead of loops …</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-accelerating-the-performance-of-cfd-code-with-numpy-arrays">Exercise: Accelerating the performance of CFD code with numpy arrays</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#need-to-go-faster">Need to go faster!</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <ul class="simple">
+<li><p>Archer numpy example for the same problem along with profiler output</p></li>
+</ul>
+<section class="tex2jax_ignore mathjax_ignore" id="the-numpy-library-for-efficient-numeric-computing">
+<h1>The <code class="docutils literal notranslate"><span class="pre">numpy</span></code> library for efficient numeric computing<a class="headerlink" href="#the-numpy-library-for-efficient-numeric-computing" title="Link to this heading">#</a></h1>
+<section id="performance-of-lists-for-aggregate-numeric-data">
+<h2>Performance of lists for aggregate numeric data<a class="headerlink" href="#performance-of-lists-for-aggregate-numeric-data" title="Link to this heading">#</a></h2>
+<p>Often it is essential to hold a set of related numeric values in a variable e.g. a dataset of voltage, current and temperature measurements from a scientific experiment. Although, python provides built-in compound data structures like lists (for mutable data), tuples (for immutable data) and sets (for unique, non-repeating data), these are general purpose containers that have not been specifically optimised for numeric computing.</p>
+<p>A list can contain elements of different types of data. For example, an entity of any data type can be a member a list. To obtain this flexibility of being a general purpose container, the underlying implementation trades-off various aspects of performance (e.g. list elements may not always be allocated contiguous memory chunks). A python library called <code class="docutils literal notranslate"><span class="pre">numpy</span></code> provides a specialised data container known as <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> that is capable of handling the performance demands of high performance computing, and forms the basis of the modern scientific computing stack.</p>
+</section>
+<section id="performance-of-loops-on-aggregate-data">
+<h2>Performance of loops on aggregate data<a class="headerlink" href="#performance-of-loops-on-aggregate-data" title="Link to this heading">#</a></h2>
+<p>In scientific computing, it is a common requirement to handle large data sets and perform mathematical operations on them. The traditional method of accessing elements in a dataset by looping through them individually (to perform element-by-element computations) does not scale well in terms of performance for large data vectors.</p>
+<p>In numeric computing, we care about performance of (nested) loops reading/writing to/from arrays of floats/doubles.</p>
+<ul class="simple">
+<li><p>Often performing same operation on all elements (individually, pairwise, or across &gt;2 arrays)</p></li>
+<li><p>Explicit loops in Python have very significant overhead</p></li>
+<li><p>Type checking is done for each element (even though all elements of an array of same type)</p></li>
+<li><p>Array operations are not vectorised by CPython (the reference implementation)</p></li>
+</ul>
+<section id="simd-vectorisation">
+<h3>SIMD vectorisation<a class="headerlink" href="#simd-vectorisation" title="Link to this heading">#</a></h3>
+<p>One way to facilitate such large-scale computations is to take advantage of a bank of floating point units on modern processors known as <a class="reference external" href="https://en.wikipedia.org/wiki/Single_instruction,_multiple_data">SIMD units</a> as illustrated below.</p>
+<p><img alt="simd image" src="_images/simd_addition.png" /></p>
+<p>While such a construct is not available natively in python for numeric computations, the <code class="docutils literal notranslate"><span class="pre">numpy</span></code> library provides one.</p>
+</section>
+</section>
+<section id="using-the-numpy-library-for-numeric-computing">
+<h2>Using the <code class="docutils literal notranslate"><span class="pre">numpy</span></code> library for numeric computing<a class="headerlink" href="#using-the-numpy-library-for-numeric-computing" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="https://numpy.org/"><code class="docutils literal notranslate"><span class="pre">numpy</span></code></a> is a third party library usable within python projects that implements efficient data containers for handling numeric computing requirements. Numpy defines a fast array data type that is scalable to arbitrary dimensions. It provides a huge amount of operations on this array type including all common linear algebra operations. For instance, the ability to ‘<em>broadcast</em>’ array operations is particularly useful to perform numeric operations on non-identical (but still meldable to be compatible) array shapes.</p>
+<p><img alt="numpy_broadcasting image" src="_images/numpy_broadcasting.png" /></p>
+<p>NumPy (“Numeric Python”) provides:</p>
+<ul class="simple">
+<li><p>Statically typed, fixed-size multidimensional arrays (matrices) - type <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p></li>
+<li><p>Like C arrays wrapped in Python objects</p></li>
+<li><p>Linear algebra operations, random number generation</p></li>
+<li><p>Fourier transforms, polynomials etc</p></li>
+<li><p>Fast precompiled functions for numerical routines</p></li>
+<li><p>Efficient storage (contiguously in memory) and execution</p></li>
+</ul>
+<p><a class="reference external" href="https://docs.scipy.org/doc/numpy/user/whatisnumpy.html">https://docs.scipy.org/doc/numpy/user/whatisnumpy.html</a></p>
+<p>Numpy can perform vectorised operations on all elements of arrays with a single function call</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> provided as part of setting up an isolated python environment for this workshop already includes the <code class="docutils literal notranslate"><span class="pre">numpy</span></code> library, and therefore it can be readily imported for use in our projects. The recommended method of importing <code class="docutils literal notranslate"><span class="pre">numpy</span></code> functionality within our project’s python codes is as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+<p>This allows us to access the methods of the <code class="docutils literal notranslate"><span class="pre">numpy</span></code> library using the <code class="docutils literal notranslate"><span class="pre">np</span></code> namespace. This prevents clashing of several popular function names implemented within numpy from similarly named entities from the standard library or other third party libraries. There are several features provided by numpy such as slicing and provision of shared access data views held in numpy’s <code class="docutils literal notranslate"><span class="pre">ndarrays</span></code>. For a basic overview of using <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, please refer to the following resources:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://numpy.org/devdocs/user/quickstart.html">Numpy quickstart tutorial</a></p></li>
+<li><p><a class="reference external" href="https://lectures.scientific-python.org/intro/numpy/index.html">Numpy chapter on scientific python lectures</a></p></li>
+<li><p><a class="reference external" href="https://cs231n.github.io/python-numpy-tutorial/">Stanford’s CS231n lecture notes chapter on numpy</a></p></li>
+</ul>
+</section>
+<section id="exercise-numpy-vs-native-looping-over-lists-for-adding-two-vectors">
+<h2>Exercise: <code class="docutils literal notranslate"><span class="pre">numpy</span></code> vs native looping over lists for adding two vectors<a class="headerlink" href="#exercise-numpy-vs-native-looping-over-lists-for-adding-two-vectors" title="Link to this heading">#</a></h2>
+<p>First import numpy for use in our codes using the recommended syntax</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">N</span> <span class="o">=</span> <span class="mi">1000000</span>  <span class="c1"># choose a fairly large, realistic array size in scientific problems (say a million elements) </span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us add two vectors of size N.</p>
+<section id="first-using-native-python-lists">
+<h3>First using native python lists<a class="headerlink" href="#first-using-native-python-lists" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_native</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="n">Y_native</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="n">Z_native</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">N</span>    <span class="c1"># pre-allocate a result list of the same size</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="and-loops">
+<h3>and loops ….<a class="headerlink" href="#and-loops" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+    <span class="n">Z_native</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_native</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">Y_native</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 378 ms, sys: 17.2 ms, total: 395 ms
+Wall time: 395 ms
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="list-comprehension-vs-loops">
+<h3>List comprehension vs loops<a class="headerlink" href="#list-comprehension-vs-loops" title="Link to this heading">#</a></h3>
+<p>Using python’s list comprehension facilities can be ever so slightly faster than the conventional loop syntax (using an explicit loop statement and an indented block of body of code to be repeated). However, this still executes the loop to construct the result list, but has just a slightly more pythonic syntax that is sometimes preferred</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="p">[</span><span class="n">X_native</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">Y_native</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 252 ms, sys: 26.4 ms, total: 279 ms
+Wall time: 278 ms
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="now-switch-to-using-numpy-arrays">
+<h3>Now, switch to using Numpy arrays<a class="headerlink" href="#now-switch-to-using-numpy-arrays" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_numpy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="n">Y_numpy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="n">Z_numpy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>    <span class="c1"># pre-allocate a result vector initialised with zeros</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="and-performing-vectorised-addition-instead-of-loops">
+<h3>and performing vectorised addition instead of loops …<a class="headerlink" href="#and-performing-vectorised-addition-instead-of-loops" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">Z_numpy</span> <span class="o">=</span> <span class="n">X_numpy</span> <span class="o">+</span> <span class="n">Y_numpy</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 3.53 ms, sys: 3.33 ms, total: 6.86 ms
+Wall time: 5.95 ms
+</pre></div>
+</div>
+</div>
+</div>
+<p>We achieved a few orders of magnitude speedup!</p>
+</section>
+<section id="exercise-accelerating-the-performance-of-cfd-code-with-numpy-arrays">
+<h3>Exercise: Accelerating the performance of CFD code with numpy arrays<a class="headerlink" href="#exercise-accelerating-the-performance-of-cfd-code-with-numpy-arrays" title="Link to this heading">#</a></h3>
+<p>In the <code class="docutils literal notranslate"><span class="pre">cfd_numpy</span></code> directory, we have provided a refactored version of the CFD code that uses Numpy arrays rather than Python lists, which also replaces loops with vectorised operations. Inspect and understand the <code class="docutils literal notranslate"><span class="pre">numpy</span></code> version of the code. In particular, notice how the absence of loops results in much reduced code clutter, which improves readability by conveying the program’s intent better.</p>
+<p>Navigate to the <code class="docutils literal notranslate"><span class="pre">cfd_numpy</span></code> directory, and run the program with the same problem size as before, i.e. a 128 x 128 grid (scaling factor of 4) and 10000 Jacobi iterations:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>prompt:/path/to/cfd_numpy&gt;<span class="w"> </span>python<span class="w"> </span>cfd.py<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">10000</span>
+</pre></div>
+</div>
+<p>The timing output of the program should reveal a good improvement in the speed e.g.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">2</span><span class="n">D</span> <span class="n">CFD</span> <span class="n">Simulation</span>
+<span class="o">=================</span>
+<span class="n">Scale</span> <span class="n">factor</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">Iterations</span>   <span class="o">=</span> <span class="mi">10000</span>
+
+<span class="n">Initialisation</span> <span class="n">took</span> <span class="mf">0.00024</span><span class="n">s</span>
+
+<span class="n">Grid</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">128</span> <span class="n">x</span> <span class="mi">128</span>
+
+<span class="n">Starting</span> <span class="n">main</span> <span class="n">Jacobi</span> <span class="n">loop</span><span class="o">...</span>
+
+<span class="o">...</span><span class="n">finished</span>
+
+<span class="n">Calculation</span> <span class="n">took</span> <span class="mf">1.52996</span><span class="n">s</span>
+</pre></div>
+</div>
+</section>
+<section id="need-to-go-faster">
+<h3>Need to go faster!<a class="headerlink" href="#need-to-go-faster" title="Link to this heading">#</a></h3>
+<p>We achieved a decent speedup of the CFD code by replacing lists and loops with <code class="docutils literal notranslate"><span class="pre">numpy</span></code> arrays and vectorised operations, but let us investigate if further speed-up is possible.</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="profiling.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Performance analysis of scientific code</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="numba_jit_parallel.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Just-in-time compilation and parallelisation with Numba</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#performance-of-lists-for-aggregate-numeric-data">Performance of lists for aggregate numeric data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#performance-of-loops-on-aggregate-data">Performance of loops on aggregate data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simd-vectorisation">SIMD vectorisation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-numpy-library-for-numeric-computing">Using the <code class="docutils literal notranslate"><span class="pre">numpy</span></code> library for numeric computing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-numpy-vs-native-looping-over-lists-for-adding-two-vectors">Exercise: <code class="docutils literal notranslate"><span class="pre">numpy</span></code> vs native looping over lists for adding two vectors</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#first-using-native-python-lists">First using native python lists</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#and-loops">and loops ….</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#list-comprehension-vs-loops">List comprehension vs loops</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#now-switch-to-using-numpy-arrays">Now, switch to using Numpy arrays</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#and-performing-vectorised-addition-instead-of-loops">and performing vectorised addition instead of loops …</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-accelerating-the-performance-of-cfd-code-with-numpy-arrays">Exercise: Accelerating the performance of CFD code with numpy arrays</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#need-to-go-faster">Need to go faster!</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Krishnakumar Gopalakrishnan, Tuomas Koskela, Samantha Ahern (UCL-ARC) and Jamie Quinn
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

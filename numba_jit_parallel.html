@@ -1,0 +1,715 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Just-in-time compilation and parallelisation with Numba &#8212; Cluster club workshop on Accelerating Scientific Code in Python</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'numba_jit_parallel';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Challenge: N-body simulation of particles in Cosmology" href="nbody_challenge.html" />
+    <link rel="prev" title="The numpy library for efficient numeric computing" href="numpy_ndarrays.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="README.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/ARC_logo.jpg" class="logo__image only-light" alt="Cluster club workshop on Accelerating Scientific Code in Python - Home"/>
+    <script>document.write(`<img src="_static/ARC_logo.jpg" class="logo__image only-dark" alt="Cluster club workshop on Accelerating Scientific Code in Python - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="README.html">
+                    Cluster club workshop on Accelerating Scientific Code in Python
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="profiling.html">Performance analysis of scientific code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_ndarrays.html">The <code class="docutils literal notranslate"><span class="pre">numpy</span></code> library for efficient numeric computing</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Just-in-time compilation and parallelisation with Numba</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nbody_challenge.html">Challenge: N-body simulation of particles in Cosmology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CONDUCT.html">Code of Conduct</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/UCL-ARC/cluster_club_accelerated_python" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/UCL-ARC/cluster_club_accelerated_python/issues/new?title=Issue%20on%20page%20%2Fnumba_jit_parallel.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/numba_jit_parallel.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Just-in-time compilation and parallelisation with Numba</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#python-interpreter-overheads">Python interpreter overheads</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compilation-to-machine-code">Compilation to machine code</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#just-in-time-jit-compilation">Just-in-time (JIT) compilation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallel-computing">Parallel Computing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-numba-library">The <code class="docutils literal notranslate"><span class="pre">numba</span></code> library</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-accelerate-large-scale-vector-addition-using-numba">Exercise: Accelerate large-scale vector addition using <code class="docutils literal notranslate"><span class="pre">numba</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-refactor-jacobi-function-of-cfd-code-to-use-numba-jit-and-autoparallelisation">Exercise: Refactor <code class="docutils literal notranslate"><span class="pre">jacobi</span></code> function of CFD code to use <code class="docutils literal notranslate"><span class="pre">numba</span></code> JIT and autoparallelisation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-compare-the-numba-and-numpy-versions-of-cfd-code-on-a-512-x-512-grid-scale-factor-of-16-and-with-10000-jacobi-iterations">Exercise: Compare the <code class="docutils literal notranslate"><span class="pre">numba</span></code> and <code class="docutils literal notranslate"><span class="pre">numpy</span></code> versions of CFD code on a 512 x 512 grid (scale factor of 16) and with 10000 Jacobi iterations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#concluding-remarks">Concluding remarks</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="just-in-time-compilation-and-parallelisation-with-numba">
+<h1>Just-in-time compilation and parallelisation with Numba<a class="headerlink" href="#just-in-time-compilation-and-parallelisation-with-numba" title="Link to this heading">#</a></h1>
+<section id="python-interpreter-overheads">
+<h2>Python interpreter overheads<a class="headerlink" href="#python-interpreter-overheads" title="Link to this heading">#</a></h2>
+<p>Python being an interpreted language, executes each line of source code one at a time in a sequential manner. An interpreter is a program that directly executes the instructions in the source code without requiring them to be compiled into an executable first. Interpreters tend to be more flexible than compilers, but are less efficient when running programs. The efficiency penalty arises because the interpreting process needs to be done every time by the python interpreter when the program is run.</p>
+<p>Due to these overheads of the Python interpreter at runtime, running a pure python program is generally slow which may not be suitable for large-scale numerical computing demands. Each mathematical operation usually has a considerable overhead arising from the Python interpreter, making especially time-critical operations inefficient.</p>
+</section>
+<section id="compilation-to-machine-code">
+<h2>Compilation to machine code<a class="headerlink" href="#compilation-to-machine-code" title="Link to this heading">#</a></h2>
+<p>One approach to avoid the slowdown due to the interpreting program is to compile (i.e. translate) the user written code into machine-level instructions that can be directly executed by the CPU thereby circumventing the need for an interpreting process. In the domain of scientific computing, this paradigm is usually adopted to execute programs written in languages such as C, C++, Fortran.</p>
+<p>The process of translating the user code to machine code typically involves several steps and is performed by a compiler toolchain (a set of related programs) installed on the machine. Since compilers can view the entire source code upfront, they can perform a number of analyses and optimizations when generating machine instructions that speeds up execution than just interpreting each line individually.</p>
+<p>However, compiled languages are not usually flexible e.g. they typically do not have features like dynamic typing wherein the data type of each variable need not be known apriori. In general, it is accepted that languages that traditionally use interpreter runtimes are easier for new programmers to learn and prototype to quickly evaluate scientific concepts.</p>
+</section>
+<section id="just-in-time-jit-compilation">
+<h2>Just-in-time (JIT) compilation<a class="headerlink" href="#just-in-time-jit-compilation" title="Link to this heading">#</a></h2>
+<p>Since interpreters and compilers have complementary strengths and weaknesses, one possibility is to implement facilities to somehow combine aspects of both. A “Just-in-time” compilation is a process wherein only certain critical sub-sections of code are identified to be compiled at runtime. The rest of the user code shall continue to be evaluated by the python interpreter as usual.</p>
+<p>The critical sections of code that need to be run several times (e.g. compulational bottlenecks such as slow functions identified with the help of a profiler) can be instructed to be compiled into machine code.</p>
+</section>
+<section id="parallel-computing">
+<h2>Parallel Computing<a class="headerlink" href="#parallel-computing" title="Link to this heading">#</a></h2>
+<p>Modern computers are highly parallel systems. We already covered SIMD parallelisation, where within each CPU cores there exist hardware vector units that allow the parallel execution of certain floating point operations.</p>
+<p>CPUs themselves consists of multiple CPU cores, and they can be leveraged i.e. the task to solve can be distributed across these different cores to further achieve speedup. However, it is worth remembering that the serial part of the code (i.e. code that needs to be run sequentially due to its fundamental nature of operations such as in time-stepping for Ordinary and Partial Differential Equations) shall dominate and the speed-up shall most likely be far below the number of CPU cores across which the program code was distributed across.</p>
+<p>We can also leverage General Purpose Graphics Processing Units (GPGPUs) as accelerator devices that contain highly parallel floating point units. If we scale to larger compute clusters then there is also a further level of parallelism between the individual hardware nodes.</p>
+</section>
+<section id="the-numba-library">
+<h2>The <code class="docutils literal notranslate"><span class="pre">numba</span></code> library<a class="headerlink" href="#the-numba-library" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="https://numba.pydata.org/"><code class="docutils literal notranslate"><span class="pre">Numba</span></code></a> is a third party accelerator library for Python that allows to just-in-time compile Python functions into fast, direct machine code that need not access the Python interpreter. Moreover, it allows to explore parallelisations that cover a lot of use-cases for parallel computing on a single machine using shared-memory parallelism. In addition to all this, Numba has features to directly cross-compile code for use on NVidia GPU accelerators.</p>
+<p>Depending on the mathematical operations within the function being targeted for compilation, its performance can be close to hand-optimized C code. It is cross-platform and bundles the <code class="docutils literal notranslate"><span class="pre">llvmlite</span></code> library (using the LLVM compiler toolchain) for providing cross-platform high-quality compilation of python functions.</p>
+</section>
+<section id="exercise-accelerate-large-scale-vector-addition-using-numba">
+<h2>Exercise: Accelerate large-scale vector addition using <code class="docutils literal notranslate"><span class="pre">numba</span></code><a class="headerlink" href="#exercise-accelerate-large-scale-vector-addition-using-numba" title="Link to this heading">#</a></h2>
+<p>Although <code class="docutils literal notranslate"><span class="pre">numba</span></code> provides an extensive set of facilities and features to tackle various compilation aspects, easy gains can usually be made by making use of the parallelisati. This is done by decorating critical functions of interest with the <code class="docutils literal notranslate"><span class="pre">&#64;njit(parallel=True)</span></code> decorator.</p>
+<p>Let us accelerate the addition of two numpy arrays and see the difference in performance afforded by parallelisation</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+<span class="kn">import</span> <span class="nn">time</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">1000000</span>                       <span class="c1"># 1 million array elements</span>
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span>     <span class="c1"># Set up a random number generator</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>                 <span class="c1"># n uniformly distributed floating point numbers in [0, 1]</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>        <span class="c1"># n Gaussian distributed floating point numbers</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>  <span class="c1"># Placeholder for result vector</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>First, we benchmark the numpy vector addition</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter_ns</span><span class="p">()</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+<span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter_ns</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Numpy vectorised operation on a single CPU core took </span><span class="si">{</span><span class="p">(</span><span class="n">t2</span><span class="o">-</span><span class="n">t1</span><span class="p">)</span><span class="o">/</span><span class="mf">1e6</span><span class="si">}</span><span class="s1"> ms&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Numpy vectorised operation on a single CPU core took 5.422406 ms
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next, we refactor the vector addition operation into a function, and mark that function for jit compilation by decorating it suitably.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">numba_fun</span><span class="p">(</span><span class="n">in1</span><span class="p">,</span> <span class="n">in2</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">in1</span> <span class="o">+</span> <span class="n">in2</span>
+        
+<span class="c1"># numba.set_num_threads(8)</span>
+<span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter_ns</span><span class="p">()</span>
+<span class="n">numba_fun</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>
+<span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter_ns</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Running the function (including compilation time) with parallel CPU cores took </span><span class="si">{</span><span class="p">(</span><span class="n">t2</span><span class="o">-</span><span class="n">t1</span><span class="p">)</span><span class="o">/</span><span class="mf">1e6</span><span class="si">}</span><span class="s1"> ms&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running the function (including compilation time) with parallel CPU cores took 837.853423 ms
+</pre></div>
+</div>
+</div>
+</div>
+<p>However, the performance seems to be rather poor.  This is because the compilation process incurs significant overhead. However, once compiled, evaluating the function is significantly faster. Hence, JIT compilation is most beneficial in cases where a time-consuming function is repeatedly evaluated (as in our <code class="docutils literal notranslate"><span class="pre">jacobi</span></code> function in the CFD code exercise). The speed-up of compiled function evaluation can be validated by repeatedly calling the function a few times.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter_ns</span><span class="p">()</span>
+    <span class="n">numba_fun</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter_ns</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Evaluating the pre-compiled function with parallel CPU cores took </span><span class="si">{</span><span class="p">(</span><span class="n">t2</span><span class="o">-</span><span class="n">t1</span><span class="p">)</span><span class="o">/</span><span class="mf">1e3</span><span class="si">}</span><span class="s1"> us&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Evaluating the pre-compiled function with parallel CPU cores took 11.323 us
+Evaluating the pre-compiled function with parallel CPU cores took 3.182 us
+Evaluating the pre-compiled function with parallel CPU cores took 1.61 us
+Evaluating the pre-compiled function with parallel CPU cores took 1.422 us
+Evaluating the pre-compiled function with parallel CPU cores took 1.397 us
+</pre></div>
+</div>
+</div>
+</div>
+<p>As seen from the timing results, a significant speed-up was achieved by distributing the compiled function over multiple cores. The number of cores to use for parallelisation can optionally be set using <code class="docutils literal notranslate"><span class="pre">numba.set_num_threads(n)</span></code> before the <code class="docutils literal notranslate"><span class="pre">&#64;njit</span></code> decorator line. Otherwise, numba shall use all available CPU cores, which may not be the most efficient when considering the scaling characteristics of the problem at hand.</p>
+</section>
+<section id="exercise-refactor-jacobi-function-of-cfd-code-to-use-numba-jit-and-autoparallelisation">
+<h2>Exercise: Refactor <code class="docutils literal notranslate"><span class="pre">jacobi</span></code> function of CFD code to use <code class="docutils literal notranslate"><span class="pre">numba</span></code> JIT and autoparallelisation<a class="headerlink" href="#exercise-refactor-jacobi-function-of-cfd-code-to-use-numba-jit-and-autoparallelisation" title="Link to this heading">#</a></h2>
+<p>In the <code class="docutils literal notranslate"><span class="pre">cfd_numba</span></code> directory, we have provided a version of the CFD code that uses numba to accelerate the computations. Upon inspecting the code, we see that the <code class="docutils literal notranslate"><span class="pre">numba</span></code> version of the CFD code differs mainly in the fact that the <code class="docutils literal notranslate"><span class="pre">jacobi</span></code> function is annotated to be just-in-time compiled and distributed across cores for parallel computation of results. Not all methods in the <code class="docutils literal notranslate"><span class="pre">numpy</span></code> library are compatible with <code class="docutils literal notranslate"><span class="pre">numba</span></code> though. In particular, we notice through experimentation that the <code class="docutils literal notranslate"><span class="pre">np.copyto</span></code> method cannot be used here, and hence the code provided reverts to the simpler <code class="docutils literal notranslate"><span class="pre">np.copy()</span></code> for assigning the stream function’s updated values.</p>
+<p>Navigate to the <code class="docutils literal notranslate"><span class="pre">cfd_numba</span></code> directory, and run the program with the same problem size as before, i.e. a 128 x 128 grid (scaling factor of 4) and 10000 Jacobi iterations:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>prompt:/path/to/cfd_numba&gt;python<span class="w"> </span>cfd.py<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">10000</span>
+</pre></div>
+</div>
+<p>The timing output of the program should unfortunatel result in a slowdown over the single-core <code class="docutils literal notranslate"><span class="pre">numpy</span></code> version e.g.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">2</span><span class="n">D</span> <span class="n">CFD</span> <span class="n">Simulation</span>
+<span class="o">=================</span>
+<span class="n">Scale</span> <span class="n">factor</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">Iterations</span>   <span class="o">=</span> <span class="mi">10000</span>
+
+<span class="n">Initialisation</span> <span class="n">took</span> <span class="mf">0.00021</span><span class="n">s</span>
+
+<span class="n">Grid</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">128</span> <span class="n">x</span> <span class="mi">128</span>
+
+<span class="n">Starting</span> <span class="n">main</span> <span class="n">Jacobi</span> <span class="n">loop</span><span class="o">...</span>
+
+<span class="o">...</span><span class="n">finished</span>
+
+<span class="n">Calculation</span> <span class="n">took</span> <span class="mf">5.27128</span><span class="n">s</span>
+</pre></div>
+</div>
+<p>However, one key observation is that, we can now refine the grid size and/or crank up the number of Jacobi iterations to profit from the amortised cost of repeatedly invoking a pre-compiled function.</p>
+</section>
+<section id="exercise-compare-the-numba-and-numpy-versions-of-cfd-code-on-a-512-x-512-grid-scale-factor-of-16-and-with-10000-jacobi-iterations">
+<h2>Exercise: Compare the <code class="docutils literal notranslate"><span class="pre">numba</span></code> and <code class="docutils literal notranslate"><span class="pre">numpy</span></code> versions of CFD code on a 512 x 512 grid (scale factor of 16) and with 10000 Jacobi iterations<a class="headerlink" href="#exercise-compare-the-numba-and-numpy-versions-of-cfd-code-on-a-512-x-512-grid-scale-factor-of-16-and-with-10000-jacobi-iterations" title="Link to this heading">#</a></h2>
+<p>Sample timing output from <code class="docutils literal notranslate"><span class="pre">numba</span></code> parallel version:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">2</span><span class="n">D</span> <span class="n">CFD</span> <span class="n">Simulation</span>
+<span class="o">=================</span>
+<span class="n">Scale</span> <span class="n">factor</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="n">Iterations</span>   <span class="o">=</span> <span class="mi">10000</span>
+
+<span class="n">Initialisation</span> <span class="n">took</span> <span class="mf">0.00142</span><span class="n">s</span>
+
+<span class="n">Grid</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">512</span> <span class="n">x</span> <span class="mi">512</span>
+
+<span class="n">Starting</span> <span class="n">main</span> <span class="n">Jacobi</span> <span class="n">loop</span><span class="o">...</span>
+
+<span class="o">...</span><span class="n">finished</span>
+
+<span class="n">Calculation</span> <span class="n">took</span> <span class="mf">23.12356</span><span class="n">s</span>
+</pre></div>
+</div>
+<p>Sample timing output from <code class="docutils literal notranslate"><span class="pre">numpy</span></code> serial version:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">2</span><span class="n">D</span> <span class="n">CFD</span> <span class="n">Simulation</span>
+<span class="o">=================</span>
+<span class="n">Scale</span> <span class="n">factor</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="n">Iterations</span>   <span class="o">=</span> <span class="mi">10000</span>
+
+<span class="n">Initialisation</span> <span class="n">took</span> <span class="mf">0.00133</span><span class="n">s</span>
+
+<span class="n">Grid</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">512</span> <span class="n">x</span> <span class="mi">512</span>
+
+<span class="n">Starting</span> <span class="n">main</span> <span class="n">Jacobi</span> <span class="n">loop</span><span class="o">...</span>
+
+<span class="o">...</span><span class="n">finished</span>
+
+<span class="n">Calculation</span> <span class="n">took</span> <span class="mf">49.91595</span><span class="n">s</span>
+</pre></div>
+</div>
+<p>We get a speed up of approx 2. Experiment to see if there are further improvements in speed-up using a finer grid and/or by increasing the number of Jacobi iterations</p>
+</section>
+<section id="concluding-remarks">
+<h2>Concluding remarks<a class="headerlink" href="#concluding-remarks" title="Link to this heading">#</a></h2>
+<p>Just-in-time compilation is not a guaranteed panacea for accelerating scientific codes. The potential speed-up that can be achieved depends on a number of factors such as the nature of floating point operations used, the library methods used within the function to be compiled etc. This requires further investigation on the part of the user to determine a reasonable trade-off between pace of development vs runtime performance.</p>
+<p>There exist various other approaches to accelerate scientific python codes. This includes distributing computations over many computational nodes using the MPI protocol and <code class="docutils literal notranslate"><span class="pre">mpi4py</span></code> library, performing distributed task/data parallelism/pipelining using the <code class="docutils literal notranslate"><span class="pre">dask</span></code> library, exploring concurrency and multithreading using <code class="docutils literal notranslate"><span class="pre">joblib</span></code>, offloading computationally intensive functions as kernels to dedicated accelerator hardware such as GPUs and FPGAs using libraries such as <code class="docutils literal notranslate"><span class="pre">dace</span></code> etc.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="numpy_ndarrays.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">The <code class="docutils literal notranslate"><span class="pre">numpy</span></code> library for efficient numeric computing</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="nbody_challenge.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Challenge: N-body simulation of particles in Cosmology</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#python-interpreter-overheads">Python interpreter overheads</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compilation-to-machine-code">Compilation to machine code</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#just-in-time-jit-compilation">Just-in-time (JIT) compilation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallel-computing">Parallel Computing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-numba-library">The <code class="docutils literal notranslate"><span class="pre">numba</span></code> library</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-accelerate-large-scale-vector-addition-using-numba">Exercise: Accelerate large-scale vector addition using <code class="docutils literal notranslate"><span class="pre">numba</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-refactor-jacobi-function-of-cfd-code-to-use-numba-jit-and-autoparallelisation">Exercise: Refactor <code class="docutils literal notranslate"><span class="pre">jacobi</span></code> function of CFD code to use <code class="docutils literal notranslate"><span class="pre">numba</span></code> JIT and autoparallelisation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-compare-the-numba-and-numpy-versions-of-cfd-code-on-a-512-x-512-grid-scale-factor-of-16-and-with-10000-jacobi-iterations">Exercise: Compare the <code class="docutils literal notranslate"><span class="pre">numba</span></code> and <code class="docutils literal notranslate"><span class="pre">numpy</span></code> versions of CFD code on a 512 x 512 grid (scale factor of 16) and with 10000 Jacobi iterations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#concluding-remarks">Concluding remarks</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Krishnakumar Gopalakrishnan, Tuomas Koskela, Samantha Ahern (UCL-ARC) and Jamie Quinn
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
