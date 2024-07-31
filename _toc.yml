@@ -7,5 +7,6 @@ chapters:
 - file: profiling
 - file: numpy_ndarrays
 - file: numba_jit_parallel
+- file: nbody_challenge
 - file: CONTRIBUTING
 - file: CONDUCT
