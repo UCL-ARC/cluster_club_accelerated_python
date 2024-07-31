@@ -1,4 +1,4 @@
-# N-body simulation of particles in Cosmology
+# Challenge: N-body simulation of particles in Cosmology
 
 ## Introduction
 
